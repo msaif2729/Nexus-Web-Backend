@@ -14,8 +14,16 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-const ip = process.env.LOCAL_IP || 'localhost';
+// const isProd = process.env.NODE_ENV === 'production';
+// const hostname = isProd ? 'nexus-web-backend.onrender.com' : (process.env.LOCAL_IP || 'localhost');
+
+// console.log(hostname);
+
+const ip = process.env.LOCAL_IP;
 const port = process.env.PORT;
+
+console.log(ip+port);
+
 
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
@@ -23,6 +31,7 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 let clients = new Map(); 
 
 app.use(cors());
+
 app.use('/uploads', express.static(uploadDir));
 app.use(express.json({ limit: '10mb' }));
 
@@ -228,7 +237,12 @@ wss.on('connection', (ws) => {
   });
 });
 
-const PORT = 5000;
-server.listen(PORT, () => {
-  console.log(`Server running at http://${ip}:${PORT}`);
+
+app.post('/test', (req, res) => {
+  console.log("Received request on /test");
+  res.json({ mssg: "Hello World" });
+});
+
+server.listen(port, () => {
+  console.log(`Server running at ${ip}:${port}`);
 });
